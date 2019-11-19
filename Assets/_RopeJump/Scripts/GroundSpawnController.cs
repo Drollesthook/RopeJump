@@ -36,8 +36,8 @@ public class GroundSpawnController : MonoBehaviour {
     }
 
     void SpawnNextBlock() {
-        _blocksQueue.Enqueue(Instantiate(_levelBlock, CountBlockSpawnPos(), Quaternion.identity));
-        //_blocksQueue.Enqueue(LeanPool.Spawn(_levelBlock, CountBlockSpawnPos(), Quaternion.identity));
+        //_blocksQueue.Enqueue(Instantiate(_levelBlock, CountBlockSpawnPos(), Quaternion.identity));
+        _blocksQueue.Enqueue(LeanPool.Spawn(_levelBlock, CountBlockSpawnPos(), Quaternion.identity));
         _blocksSpawned++;
         _levelLength = _blocksSpawned * _blockLength;
     }
@@ -56,15 +56,16 @@ public class GroundSpawnController : MonoBehaviour {
 
     void Reset() {
         for(int i = 0; i <= _blocksQueue.Count; i++) {
-            Destroy(_blocksQueue.Dequeue());
+            LeanPool.Despawn(_blocksQueue.Dequeue());
+            //Destroy(_blocksQueue.Dequeue());
         }
         _blocksSpawned = 0;
         _levelLength = 0;
     }
 
     void DespawnBlock() {
-        //LeanPool.Despawn(_blocksQueue.Dequeue());
-        Destroy(_blocksQueue.Dequeue());
+        LeanPool.Despawn(_blocksQueue.Dequeue());
+        //Destroy(_blocksQueue.Dequeue());
     }
 
     Vector3 CountBlockSpawnPos() {
