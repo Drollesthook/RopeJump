@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 using Vector3 = UnityEngine.Vector3;
 
 public class PlayerController : MonoBehaviour {
@@ -9,49 +8,72 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] float _ceilingPositionY = default;
     [SerializeField] float _Xoffset = default;
     [SerializeField] LayerMask _ceilingMask = default;
+    [SerializeField] GameManager _gameManager = default;
 
     Rigidbody _playerRb;
     Vector3 _raycastDirection;
     Vector3 _hookPosition;
     LineRenderer _lineRenderer;
+    TrailRenderer _trailRenderer;
     DeathHandler _deathHandler;
-    bool _isTouchReseted;
+    bool _isTouchReseted, _isGameStarted, _isPlayerDead;
 
     Vector3 _playerStartPos, _hookStartPos;
     void Start() {
-        GetStartPositions();
         _deathHandler = _player.GetComponent<DeathHandler>();
         _lineRenderer = _player.GetComponent<LineRenderer>();
+        _trailRenderer = _player.GetComponent<TrailRenderer>();
         _playerRb = _player.GetComponent<Rigidbody>();
-        _lineRenderer.SetPosition(0, _player.transform.position);
-        _lineRenderer.SetPosition(1, _player.transform.position);
-        _lineRenderer.enabled = false;
+        _deathHandler.PlayerDead += OnPlayerDied;
+        _gameManager.GameStarted += OnGameStarted;
+        _gameManager.GameEnded += OnGameEnded;
         CountRaycastDirection();
-        _deathHandler.PlayerDead += OnPlayerDead;
+        _hookPosition = _raycastDirection;
+        GetStartPositions();
+        _lineRenderer.enabled = true;
+        ReleaseHook();
     }
 
     void OnDestroy() {
-        _deathHandler.PlayerDead -= OnPlayerDead;
+        _deathHandler.PlayerDead -= OnPlayerDied;
+        _gameManager.GameStarted -= OnGameStarted;
+        _gameManager.GameEnded -= OnGameEnded;
     }
 
     void Update() {
-        if (Input.GetMouseButtonDown(0)) {
-            GetHookPosition();
-            ReleaseHook();
-            _isTouchReseted = true;
+        if (_isPlayerDead) return;
+        if (_isGameStarted) {
+            if (Input.GetMouseButtonDown(0)) {
+                CountHookPosition();
+                ReleaseHook();
+                _isTouchReseted = true;
+            }
+
+            if (Input.GetMouseButton(0) && _isTouchReseted) {
+                AddForceToPlayer();
+            }
+
+            if (Input.GetMouseButtonUp(0)) {
+                HideHook();
+            }
         }
-        if (Input.GetMouseButton(0) && _isTouchReseted) {
-            DrawLineRenderer();
-            AddForceToPlayer();
-        }
-        if (Input.GetMouseButtonUp(0)) {
-            HideHook();
-        }
+        DrawLineRenderer();
+    }
+
+    void OnGameStarted() {
+        _isGameStarted = true;
+        _trailRenderer.enabled = true;
+    }
+
+    void OnGameEnded() {
+        _isPlayerDead = false;
+        _isGameStarted = false;
+        Reset();
     }
 
     void GetStartPositions() {
         _playerStartPos = _player.transform.position;
-        _hookStartPos = _joint.transform.position;
+        _hookStartPos = _hookPosition;
     }
 
     void Reset() {
@@ -60,6 +82,7 @@ public class PlayerController : MonoBehaviour {
         _playerRb.velocity = Vector3.zero;
         _hookPosition = _hookStartPos;
         _player.transform.position = _playerStartPos;
+        ReleaseHook();
     }
 
     void ReleaseHook() {
@@ -87,11 +110,12 @@ public class PlayerController : MonoBehaviour {
         _raycastDirection = new Vector3(_player.transform.position.x + _Xoffset, _ceilingPositionY, 0);
     }
 
-    void OnPlayerDead() {
-        Reset();
+    void OnPlayerDied() {
+        _isPlayerDead = true;
+        _trailRenderer.enabled = false;
     }
 
-    void GetHookPosition() {
+    void CountHookPosition() {
         RaycastHit hit;
         if (Physics.Raycast(_player.transform.position, _raycastDirection, out hit, Mathf.Infinity, _ceilingMask)) {
             _hookPosition = hit.point;

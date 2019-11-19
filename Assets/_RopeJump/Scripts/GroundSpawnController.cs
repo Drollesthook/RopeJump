@@ -9,20 +9,19 @@ public class GroundSpawnController : MonoBehaviour {
     [SerializeField] GameObject _levelBlock = default;
     [SerializeField] Transform _player = default;
     [SerializeField] float _blockLength = default;
+    [SerializeField] GameManager _gameManager = default;
 
-    DeathHandler _deathHandler;
     int _blocksSpawned;
     float _levelLength, _offset;
     Queue<GameObject> _blocksQueue = new Queue<GameObject>();
     void Start() {
-        _deathHandler = _player.GetComponent<DeathHandler>();
-        _deathHandler.PlayerDead += OnPlayerDead;
+        _gameManager.GameEnded += OnGameEnded;
         _offset = _blockLength;
         StartCoroutine(CheckForDespawnTimer());
     }
 
     void OnDestroy() {
-        _deathHandler.PlayerDead -= OnPlayerDead;
+        _gameManager.GameEnded -= OnGameEnded;
     }
 
     void Update(){
@@ -50,7 +49,7 @@ public class GroundSpawnController : MonoBehaviour {
         }
     }
 
-    void OnPlayerDead() {
+    void OnGameEnded() {
         Reset();
     }
 
