@@ -9,13 +9,17 @@ public class UIController : MonoBehaviour {
     [SerializeField] GameManager _gameManager = default;
     [SerializeField] GameObject _mainMenu = default, _inGameMenu = default;
     [SerializeField] Rigidbody _playerRb = default;
-    [SerializeField] TMP_Text _speedText = default, _currentScoreText = default, _bestScoreText = default;
-    void Start()
-    {
+    [SerializeField] TMP_Text _speedText = default, _currentScoreText = default, _bestScoreText = default, _highestSpeedText = default;
+
+    const string HIGHEST_SPEED = "highest_speed";
+    float _currentSpeed, _highestSpeed;
+    void Start() {
+        _highestSpeed = PlayerPrefs.GetFloat(HIGHEST_SPEED, 0);
         _inGameMenu.SetActive(false);
         _mainMenu.SetActive(true);
         _gameManager.GameStarted += OnGameStarted;
         _gameManager.GameEnded += OnGameEnded;
+        UpdateMainMenuTexts();
     }
 
     void OnDestroy() {
@@ -25,6 +29,9 @@ public class UIController : MonoBehaviour {
     void OnGameEnded() {
         _inGameMenu.SetActive(false);
         _mainMenu.SetActive(true);
+        if(_highestSpeed > PlayerPrefs.GetFloat(HIGHEST_SPEED, 0))
+            PlayerPrefs.SetFloat(HIGHEST_SPEED, _highestSpeed);
+        UpdateMainMenuTexts();
     }
 
     void OnGameStarted() {
@@ -32,7 +39,14 @@ public class UIController : MonoBehaviour {
         _mainMenu.SetActive(false);
     }
 
+    void UpdateMainMenuTexts() {
+        _highestSpeedText.text = "Highest Speed:" + _highestSpeed.ToString("0.00") + " kmph";
+    }
+
     void Update() {
-        _speedText.text = "Speed:" + _playerRb.velocity.magnitude.ToString("0.00");
+        _currentSpeed = _playerRb.velocity.magnitude;
+        _speedText.text = "Speed:" + _currentSpeed.ToString("0.00") + " kmph";
+        if (_currentSpeed > _highestSpeed)
+            _highestSpeed = _currentSpeed;
     }
 }
