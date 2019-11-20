@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class ColorController : MonoBehaviour {
+public class PlayerColorController : MonoBehaviour {
     [SerializeField] GameObject _player = default, _destroyedPlayer = default;
     [SerializeField] Color _greenColor = default, _redColor = default, _yellowColor = default, _blueColor = default, _purpleColor = default, _blackColor = default;
     
