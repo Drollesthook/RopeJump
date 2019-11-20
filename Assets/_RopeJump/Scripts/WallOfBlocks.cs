@@ -19,6 +19,7 @@ public class WallOfBlocks : MonoBehaviour
         }
     }
 
+
     public void ReturnObstaclesOnPositions() {
         for (int i = 0; i < _listOfObstacles.Count; i++) {
             _listOfObstaclesRb[i].angularVelocity = Vector3.zero;

@@ -9,7 +9,8 @@ public class UIController : MonoBehaviour {
     [SerializeField] GameManager _gameManager = default;
     [SerializeField] GameObject _mainMenu = default, _inGameMenu = default;
     [SerializeField] Rigidbody _playerRb = default;
-    [SerializeField] TMP_Text _speedText = default, _currentScoreText = default, _bestScoreText = default, _highestSpeedText = default;
+    [SerializeField] CurrencyController _currencyController = default;
+    [SerializeField] TMP_Text _speedText = default, _currentScoreText = default, _bestScoreText = default, _highestSpeedText = default, _goldText = default;
 
     const string HIGHEST_SPEED = "highest_speed";
     float _currentSpeed, _highestSpeed;
@@ -41,6 +42,7 @@ public class UIController : MonoBehaviour {
 
     void UpdateMainMenuTexts() {
         _highestSpeedText.text = "Highest Speed:" + _highestSpeed.ToString("0.00") + " kmph";
+        _goldText.text = _currencyController.Amount().ToString();
     }
 
     void Update() {

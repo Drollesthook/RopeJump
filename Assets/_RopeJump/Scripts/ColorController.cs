@@ -21,7 +21,6 @@ public class ColorController : MonoBehaviour {
     void GetPlayerPartsMaterials() {
         foreach (MeshRenderer meshRenderer in _destroyedPlayer.GetComponentsInChildren<MeshRenderer>()) {
             _listOfDeadMaterials.Add(meshRenderer.material);
-            print("ayoo");
         }
     }
     
