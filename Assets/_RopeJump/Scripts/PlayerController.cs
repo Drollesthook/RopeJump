@@ -13,12 +13,14 @@ public class PlayerController : MonoBehaviour {
     Rigidbody _playerRb;
     Vector3 _raycastDirection;
     Vector3 _hookPosition;
+    Vector3 _playerStartPos, _hookStartPos;
     LineRenderer _lineRenderer;
     TrailRenderer _trailRenderer;
     DeathHandler _deathHandler;
     bool _isTouchReseted, _isGameStarted, _isPlayerDead;
 
-    Vector3 _playerStartPos, _hookStartPos;
+    const string ACCELERATION_POWER = "acceleration_power";
+
     void Start() {
         _deathHandler = _player.GetComponent<DeathHandler>();
         _lineRenderer = _player.GetComponent<LineRenderer>();
@@ -63,6 +65,7 @@ public class PlayerController : MonoBehaviour {
     void OnGameStarted() {
         _isGameStarted = true;
         _trailRenderer.enabled = true;
+        _forcePower = PlayerPrefs.GetFloat(ACCELERATION_POWER, 40);
     }
 
     void OnGameEnded() {

@@ -4,7 +4,7 @@ using UnityEngine;
 public class PlayerHandler : MonoBehaviour {
     [SerializeField] GameManager _gameManager = default;
     [SerializeField] GameObject _solidPlayer = default, _destroyedPlayer = default;
-    [SerializeField] CurrencyController _currencyController = default;
+    [SerializeField] SoftCurrencyController _softCurrencyController = default;
     [SerializeField] float _deathExplosionForce = 10f;
     DeathHandler _deathHandler;
 
@@ -20,7 +20,7 @@ public class PlayerHandler : MonoBehaviour {
 
     void OnTriggerEnter(Collider other) {
         if (other.CompareTag("Coin")) {
-            _currencyController.AddCoin();
+            _softCurrencyController.AddCoin();
         }
     }
 

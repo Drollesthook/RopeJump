@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class CurrencyController : MonoBehaviour {
+public class SoftCurrencyController : MonoBehaviour {
     [SerializeField] GameManager _gameManager = default;
 
     const string GOLD_AMOUNT = "gold_amount";
@@ -27,6 +27,10 @@ public class CurrencyController : MonoBehaviour {
     public void Spend(int amount) {
         _currentGold -= amount;
         SaveGoldAmount();
+    }
+
+    public bool IsEnough(int amount) {
+        return amount <= _currentGold;
     }
 
     void SaveGoldAmount() {
